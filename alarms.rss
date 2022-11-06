@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+	<title>Cumulocity latest alarm detail</title>
+	<link>https://cumulocity.com/</link>
+	<description>This rss feed provide detail of Cumulocity alarm</description>
+	<language>en</language>
+	<copyright>Copyright hold by GCC, Software AG Germany</copyright>
+	<pubdate>Tue, 03 May 2022 04:27:25 +0530</pubdate>
+<alarm>
+	<id>3539998</id>
+	<sourceId>3081697</sourceId>
+	<sourceName>Drink Vending Machine</sourceName>
+	<severity>MAJOR</severity>
+	<text>No data received from device within required interval.</text>
+	<status>ACTIVE</status>
+	<time>2022-04-08T12:20:25.384Z</time>
+	<creationTime>2022-04-08T12:20:25.398Z</creationTime>
+</alarm>
+<alarm>
+	<id>3539996</id>
+	<sourceId>3081695</sourceId>
+	<sourceName>Locker Vending Machine</sourceName>
+	<severity>MAJOR</severity>
+	<text>No data received from device within required interval.</text>
+	<status>ACTIVE</status>
+	<time>2022-04-08T12:20:24.977Z</time>
+	<creationTime>2022-04-08T12:20:24.989Z</creationTime>
+</alarm>
+<alarm>
+	<id>3539994</id>
+	<sourceId>3082393</sourceId>
+	<sourceName>Drink Vending Machine</sourceName>
+	<severity>MAJOR</severity>
+	<text>No data received from device within required interval.</text>
+	<status>ACTIVE</status>
+	<time>2022-04-08T12:20:24.644Z</time>
+	<creationTime>2022-04-08T12:20:24.655Z</creationTime>
+</alarm>
+<alarm>
+	<id>3539992</id>
+	<sourceId>3080195</sourceId>
+	<sourceName>Coil Vending Machine</sourceName>
+	<severity>MAJOR</severity>
+	<text>No data received from device within required interval.</text>
+	<status>ACTIVE</status>
+	<time>2022-04-08T12:20:24.460Z</time>
+	<creationTime>2022-04-08T12:20:24.469Z</creationTime>
+</alarm>
+<alarm>
+	<id>3538950</id>
+	<sourceId>3081699</sourceId>
+	<sourceName>Coil Vending Machine</sourceName>
+	<severity>MAJOR</severity>
+	<text>No data received from device within required interval.</text>
+	<status>ACTIVE</status>
+	<time>2022-04-08T11:23:26.446Z</time>
+	<creationTime>2022-04-08T11:23:26.474Z</creationTime>
+</alarm>
+</channel>
+</rss>
