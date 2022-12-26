@@ -31,7 +31,7 @@ public class ReadMeasurements {
         String tenantId = event.getCredentials().getTenant();
         this.subscriptionsService.runForTenant(tenantId, () -> {
             logger.info("The subscribed tenant id for measurement: " + tenantId);
-            //readAllMeasurements(); // TODO: Temporarily for testing
+            readAllMeasurements(); // TODO: Temporarily for testing
         });
     }
 
@@ -47,7 +47,7 @@ public class ReadMeasurements {
             Map<String, Object> properties = mr.getAttrs();
             Set<String> propertyKeySet = properties.keySet();
             for (String propertyKey: propertyKeySet) {
-                //logger.info("Fragment: {}", propertyKey);
+                logger.info("Fragment: {}", propertyKey);
                 Map<String, Object> seriesObject = (Map<String, Object>) properties.get(propertyKey);
                 List<String[]> seriesData = new ArrayList<>();
                 for (String seriesKey: seriesObject.keySet()) {
@@ -62,8 +62,9 @@ public class ReadMeasurements {
                         if(sk.equals("unit")) {
                             sUnitValue = (String) series.get(sk);
                             //logger.info("The value of s unit: {}", sUnitValue);
-                        } else {
-                            sValueValue = (BigDecimal) series.get(sk);
+                        }
+                        if(sk.equals("value")) {
+                            sValueValue = BigDecimal.valueOf(Long.parseLong((series.get(sk)).toString()));
                             //logger.info("The value of s value: {}", sValueValue);
                         }
                     }
@@ -80,6 +81,7 @@ public class ReadMeasurements {
                     }
                 }
             }
+            logger.info("---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----");
         });
     }
 }
