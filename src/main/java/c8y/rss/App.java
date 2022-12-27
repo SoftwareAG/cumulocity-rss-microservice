@@ -19,12 +19,4 @@ public class App
         SpringApplication.run(App.class, args);
     }
 
-
-    // http://localhost:8099/hey
-    @RequestMapping("hey")
-    public String greeting (@RequestParam(value = "name", defaultValue = "World") String you) {
-        System.out.println("Hey " + you + "!");
-        return "Hey " + you + "!";
-    }
-
 }

@@ -50,7 +50,7 @@ public class ReadEvents {
     private void onMicroserviceSubscriptionAddedEvent(final MicroserviceSubscriptionAddedEvent event) {
         String tenantId = event.getCredentials().getTenant();
         this.subscriptionsService.runForTenant(tenantId, () -> {
-            logger.info("The subscribed tenant id for event: " + tenantId);
+            //logger.info("The subscribed tenant id for event: " + tenantId);
         });
     }
 
