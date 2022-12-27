@@ -30,8 +30,8 @@ public class ReadMeasurements {
     private void onMicroserviceSubscriptionAddedEvent(final MicroserviceSubscriptionAddedEvent event) {
         String tenantId = event.getCredentials().getTenant();
         this.subscriptionsService.runForTenant(tenantId, () -> {
-            logger.info("The subscribed tenant id for measurement: " + tenantId);
-            readAllMeasurements(); // TODO: Temporarily for testing
+            //logger.info("The subscribed tenant id for measurement: " + tenantId);
+            //readAllMeasurements(); // Just for quick testing
         });
     }
 
@@ -81,7 +81,7 @@ public class ReadMeasurements {
                     }
                 }
             }
-            logger.info("---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----");
+            //logger.info("---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----");
         });
     }
 }

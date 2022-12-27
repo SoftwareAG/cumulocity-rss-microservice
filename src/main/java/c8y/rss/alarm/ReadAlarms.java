@@ -1,8 +1,5 @@
 package c8y.rss.alarm;
 
-import c8y.rss.model.Feed;
-import c8y.rss.model.FeedMessageAlarm;
-import c8y.rss.write.RSSFeedWriterForAlarm;
 import com.cumulocity.microservice.subscription.model.MicroserviceSubscriptionAddedEvent;
 import com.cumulocity.microservice.subscription.service.MicroserviceSubscriptionsService;
 import com.cumulocity.model.event.CumulocityAlarmStatuses;
@@ -45,14 +42,12 @@ public class ReadAlarms {
     @Autowired
     private MicroserviceSubscriptionsService subscriptionsService;
 
-    @Autowired
-    private RSSFeedWriterForAlarm rssFeedWriterForAlarm;
-
     @EventListener
     private void onMicroserviceSubscriptionAddedEvent(final MicroserviceSubscriptionAddedEvent event) {
         String tenantId = event.getCredentials().getTenant();
         this.subscriptionsService.runForTenant(tenantId, () -> {
-            logger.info("The subscribed tenant id for alarm: " + tenantId);
+            logger.info("RSS feed microservice subscribed...");
+            //logger.info("The subscribed tenant id: " + tenantId);
         });
     }
 
@@ -62,52 +57,6 @@ public class ReadAlarms {
             return "revert";
         }
     }, "true");
-
-    public void readLatestAlarms_OPTION1(String deviceId, CumulocitySeverities severity,
-                                 CumulocityAlarmStatuses status, String type, int batchSize) {
-
-        // create the rss feed
-        String title = "Cumulocity latest alarm detail";
-        String link = "https://cumulocity.com/";
-        String description = "This rss feed provide detail of Cumulocity alarm";
-        String language = "en";
-        String copyright = "Copyright hold by GCC, Software AG Germany";
-        Calendar cal = new GregorianCalendar();
-        Date creationDate = cal.getTime();
-        SimpleDateFormat date_format = new SimpleDateFormat(
-                "EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
-        String pubdate = date_format.format(creationDate);
-
-        Feed rssFeeder = new Feed(title, link, description, language, copyright, pubdate);
-
-        AlarmCollection alarmCollection = alarmApi.getAlarmsByFilter(new AlarmFilter().bySource(GId.asGId(deviceId)).bySeverity(severity).byStatus(status).byType(type));
-        Iterable<AlarmRepresentation> arIterable = alarmCollection.get(batchSize, revertParam).getAlarms();
-        arIterable.forEach((ar) -> {
-            logger.info("Alarm type: " + ar.getType());
-            logger.info("Alarm text: " + ar.getText());
-            logger.info("Alarm severity: " + ar.getSeverity());
-            logger.info("Alarm source name: " + ar.getSource().getName());
-            logger.info("The alarm count: " + ar.getCount());
-
-            FeedMessageAlarm feedMessageAlarm = new FeedMessageAlarm();
-            feedMessageAlarm.setId(ar.getId().getValue());
-            feedMessageAlarm.setSourceId(ar.getSource().getId().getValue());
-            feedMessageAlarm.setSourceName(ar.getSource().getName());
-            feedMessageAlarm.setSeverity(ar.getSeverity());
-            feedMessageAlarm.setText(ar.getText());
-            feedMessageAlarm.setStatus(ar.getStatus());
-            feedMessageAlarm.setTime(ar.getDateTime().toString());
-            feedMessageAlarm.setCreationTime(ar.getCreationDateTime().toString());
-
-            rssFeeder.getMessagesForAlarm().add(feedMessageAlarm);
-        });
-
-        try {
-            rssFeedWriterForAlarm.write(rssFeeder, "alarms.rss");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public String readLatestAlarms(String sourceId, String severity, String status, String type, String batchSize) {
         AlarmFilter alarmFilter = new AlarmFilter();
@@ -126,10 +75,10 @@ public class ReadAlarms {
         if(batchSize == null) {
             batchSize = "5";
         }
-        return readLatestAlarms_OPTION2(alarmFilter, Integer.valueOf(batchSize));
+        return readAlarms(alarmFilter, Integer.valueOf(batchSize));
     }
 
-    public String readLatestAlarms_OPTION2(AlarmFilter alarmFilter, int batchSize) {
+    public String readAlarms(AlarmFilter alarmFilter, int batchSize) {
 
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
