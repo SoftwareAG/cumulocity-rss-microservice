@@ -2,13 +2,10 @@ package c8y.rss.event;
 
 import com.cumulocity.microservice.subscription.model.MicroserviceSubscriptionAddedEvent;
 import com.cumulocity.microservice.subscription.service.MicroserviceSubscriptionsService;
-import com.cumulocity.model.event.CumulocityAlarmStatuses;
-import com.cumulocity.model.event.CumulocitySeverities;
 import com.cumulocity.model.idtype.GId;
 import com.cumulocity.rest.representation.event.EventRepresentation;
 import com.cumulocity.sdk.client.Param;
 import com.cumulocity.sdk.client.QueryParam;
-import com.cumulocity.sdk.client.alarm.AlarmFilter;
 import com.cumulocity.sdk.client.event.EventApi;
 import com.cumulocity.sdk.client.event.EventCollection;
 import com.cumulocity.sdk.client.event.EventFilter;
@@ -61,16 +58,6 @@ public class ReadEvents {
         }
     }, "true");
 
-    public void readLatestEvents_OLD(String deviceId, String type, int batchSize) {
-
-        EventCollection eventCollection = eventApi.getEventsByFilter(new EventFilter().bySource(GId.asGId(deviceId)).byType(type));
-        Iterable<EventRepresentation> erIterable = eventCollection.get(batchSize, revertParam).getEvents();
-        erIterable.forEach((er) -> {
-            logger.info("The event type: " + er.getType());
-            logger.info("The event text: " + er.getText());
-        });
-    }
-
     public String readLatestEvents(String sourceId, String type, String batchSize) {
         EventFilter eventFilter = new EventFilter();
         if(sourceId != null) {
@@ -82,10 +69,10 @@ public class ReadEvents {
         if(batchSize == null) {
             batchSize = "5";
         }
-        return readLatestEvents_OPTION2(eventFilter, Integer.valueOf(batchSize));
+        return readEvents(eventFilter, Integer.valueOf(batchSize));
     }
 
-    public String readLatestEvents_OPTION2(EventFilter eventFilter, int batchSize) {
+    public String readEvents(EventFilter eventFilter, int batchSize) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
