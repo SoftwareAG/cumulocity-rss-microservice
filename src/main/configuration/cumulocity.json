@@ -1,0 +1,16 @@
+{
+  "apiVersion": "2",
+  "version": "@project.version@",
+  "provider": {
+    "name": "Cumulocity"
+  },
+  "isolation": "MULTI_TENANT",
+  "resources": {
+    "cpu": "1",
+    "memory": "1G"
+  },
+  "requiredRoles": [
+    "ROLE_EVENT_READ",
+    "ROLE_ALARM_READ"
+  ]
+}
