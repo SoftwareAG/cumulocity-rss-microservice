@@ -47,7 +47,6 @@ public class ReadAlarms {
         String tenantId = event.getCredentials().getTenant();
         this.subscriptionsService.runForTenant(tenantId, () -> {
             logger.info("RSS feed microservice subscribed...");
-            //logger.info("The subscribed tenant id: " + tenantId);
         });
     }
 

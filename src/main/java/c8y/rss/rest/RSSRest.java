@@ -25,7 +25,7 @@ public class RSSRest {
     private ReadEvents readEvents;
 
     @RequestMapping(value = "/alarms/rss.xml", method = RequestMethod.GET, consumes = {MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity readLatestAlarms(@QueryParam("source") String source, @QueryParam("severity") String severity,
+    public ResponseEntity<String> readLatestAlarms(@QueryParam("source") String source, @QueryParam("severity") String severity,
                                            @QueryParam("status") String status, @QueryParam("type") String type, @QueryParam("batchSize") String batchSize) {
 
         logger.info("The values of deviceId: {}, severity: {}, status: {}, type: {}, batchSize: {}", source, severity, status, type, batchSize);
@@ -35,7 +35,7 @@ public class RSSRest {
     }
 
     @RequestMapping(value = "/events/rss.xml", method = RequestMethod.GET, consumes = {MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity readLatestEvents(@QueryParam("source") String source, @QueryParam("type") String type, @QueryParam("batchSize") String batchSize) {
+    public ResponseEntity<String> readLatestEvents(@QueryParam("source") String source, @QueryParam("type") String type, @QueryParam("batchSize") String batchSize) {
 
         logger.info("The values of deviceId: {}, type: {}, batchSize: {}", source, type, batchSize);
 
