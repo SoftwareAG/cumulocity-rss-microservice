@@ -1,4 +1,4 @@
-package c8y.democenter;
+package c8y.rss;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
