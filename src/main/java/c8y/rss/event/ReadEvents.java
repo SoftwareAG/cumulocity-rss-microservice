@@ -1,21 +1,11 @@
 package c8y.rss.event;
 
-import com.cumulocity.microservice.subscription.model.MicroserviceSubscriptionAddedEvent;
-import com.cumulocity.microservice.subscription.service.MicroserviceSubscriptionsService;
-import com.cumulocity.model.idtype.GId;
-import com.cumulocity.rest.representation.event.EventRepresentation;
-import com.cumulocity.sdk.client.Param;
-import com.cumulocity.sdk.client.QueryParam;
-import com.cumulocity.sdk.client.event.EventApi;
-import com.cumulocity.sdk.client.event.EventCollection;
-import com.cumulocity.sdk.client.event.EventFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,12 +16,21 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.cumulocity.model.idtype.GId;
+import com.cumulocity.rest.representation.event.EventRepresentation;
+import com.cumulocity.sdk.client.Param;
+import com.cumulocity.sdk.client.QueryParam;
+import com.cumulocity.sdk.client.event.EventApi;
+import com.cumulocity.sdk.client.event.EventCollection;
+import com.cumulocity.sdk.client.event.EventFilter;
 
 @Component
 public class ReadEvents {
@@ -40,17 +39,6 @@ public class ReadEvents {
     @Autowired
     private EventApi eventApi;
 
-    @Autowired
-    private MicroserviceSubscriptionsService subscriptionsService;
-
-    @EventListener
-    private void onMicroserviceSubscriptionAddedEvent(final MicroserviceSubscriptionAddedEvent event) {
-        String tenantId = event.getCredentials().getTenant();
-        this.subscriptionsService.runForTenant(tenantId, () -> {
-            //logger.info("The subscribed tenant id for event: " + tenantId);
-        });
-    }
-
     QueryParam revertParam = new QueryParam(new Param() {
         @Override
         public String getName() {
@@ -58,7 +46,7 @@ public class ReadEvents {
         }
     }, "true");
 
-    public String readLatestEvents(String sourceId, String type, String batchSize) {
+    public String readLatestEvents(String sourceId, String type, String feedSize) {
         EventFilter eventFilter = new EventFilter();
         if(sourceId != null) {
             eventFilter.bySource(GId.asGId(sourceId));
@@ -66,13 +54,13 @@ public class ReadEvents {
         if(type != null) {
             eventFilter.byType(type);
         }
-        if(batchSize == null) {
-            batchSize = "5";
+        if(feedSize == null) {
+            feedSize = "5";
         }
-        return readEvents(eventFilter, Integer.valueOf(batchSize));
+        return buildEventFeed(eventFilter, Integer.valueOf(feedSize));
     }
 
-    public String readEvents(EventFilter eventFilter, int batchSize) {
+    private String buildEventFeed(EventFilter eventFilter, int feedSize) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -106,7 +94,7 @@ public class ReadEvents {
             channelElement.appendChild(pubdateElement);
 
             EventCollection eventCollection = eventApi.getEventsByFilter(eventFilter);
-            Iterable<EventRepresentation> erIterable = eventCollection.get(batchSize, revertParam).getEvents();
+            Iterable<EventRepresentation> erIterable = eventCollection.get(feedSize, revertParam).getEvents();
             erIterable.forEach((er) -> {
                 Element eventElement = doc.createElement("event");
                 channelElement.appendChild(eventElement);

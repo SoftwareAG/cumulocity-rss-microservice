@@ -26,20 +26,20 @@ public class RSSRest {
 
     @RequestMapping(value = "/alarms/rss.xml", method = RequestMethod.GET, consumes = {MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<String> readLatestAlarms(@QueryParam("source") String source, @QueryParam("severity") String severity,
-                                           @QueryParam("status") String status, @QueryParam("type") String type, @QueryParam("batchSize") String batchSize) {
+                                           @QueryParam("status") String status, @QueryParam("type") String type, @QueryParam("feedSize") String feedSize) {
 
-        logger.info("The values of deviceId: {}, severity: {}, status: {}, type: {}, batchSize: {}", source, severity, status, type, batchSize);
+        logger.info("The values of deviceId: {}, severity: {}, status: {}, type: {}, batchSize: {}", source, severity, status, type, feedSize);
 
-        String rssFeedXMLString = readAlarms.readLatestAlarms(source, severity, status, type, batchSize);
+        String rssFeedXMLString = readAlarms.readLatestAlarms(source, severity, status, type, feedSize);
         return new ResponseEntity<>(rssFeedXMLString, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/events/rss.xml", method = RequestMethod.GET, consumes = {MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<String> readLatestEvents(@QueryParam("source") String source, @QueryParam("type") String type, @QueryParam("batchSize") String batchSize) {
+    public ResponseEntity<String> readLatestEvents(@QueryParam("source") String source, @QueryParam("type") String type, @QueryParam("feedSize") String feedSize) {
 
-        logger.info("The values of deviceId: {}, type: {}, batchSize: {}", source, type, batchSize);
+        logger.info("The values of deviceId: {}, type: {}, batchSize: {}", source, type, feedSize);
 
-        String rssFeedXMLString = readEvents.readLatestEvents(source, type, batchSize);
+        String rssFeedXMLString = readEvents.readLatestEvents(source, type, feedSize);
         return new ResponseEntity<>(rssFeedXMLString, HttpStatus.OK);
     }
 

@@ -1,7 +1,29 @@
 package c8y.rss.alarm;
 
-import com.cumulocity.microservice.subscription.model.MicroserviceSubscriptionAddedEvent;
-import com.cumulocity.microservice.subscription.service.MicroserviceSubscriptionsService;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.cumulocity.model.event.CumulocityAlarmStatuses;
 import com.cumulocity.model.event.CumulocitySeverities;
 import com.cumulocity.model.idtype.GId;
@@ -11,26 +33,6 @@ import com.cumulocity.sdk.client.QueryParam;
 import com.cumulocity.sdk.client.alarm.AlarmApi;
 import com.cumulocity.sdk.client.alarm.AlarmCollection;
 import com.cumulocity.sdk.client.alarm.AlarmFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 @Component
 public class ReadAlarms {
@@ -39,17 +41,6 @@ public class ReadAlarms {
     @Autowired
     private AlarmApi alarmApi;
 
-    @Autowired
-    private MicroserviceSubscriptionsService subscriptionsService;
-
-    @EventListener
-    private void onMicroserviceSubscriptionAddedEvent(final MicroserviceSubscriptionAddedEvent event) {
-        String tenantId = event.getCredentials().getTenant();
-        this.subscriptionsService.runForTenant(tenantId, () -> {
-            logger.info("RSS feed microservice subscribed...");
-        });
-    }
-
     QueryParam revertParam = new QueryParam(new Param() {
         @Override
         public String getName() {
@@ -57,7 +48,7 @@ public class ReadAlarms {
         }
     }, "true");
 
-    public String readLatestAlarms(String sourceId, String severity, String status, String type, String batchSize) {
+    public String readLatestAlarms(String sourceId, String severity, String status, String type, String feedSize) {
         AlarmFilter alarmFilter = new AlarmFilter();
         if(sourceId != null) {
             alarmFilter.bySource(GId.asGId(sourceId));
@@ -71,13 +62,13 @@ public class ReadAlarms {
         if(type != null) {
             alarmFilter.byType(type);
         }
-        if(batchSize == null) {
-            batchSize = "5";
+        if(feedSize == null) {
+            feedSize = "5";
         }
-        return readAlarms(alarmFilter, Integer.valueOf(batchSize));
+        return buildAlarmFeed(alarmFilter, Integer.valueOf(feedSize));
     }
 
-    public String readAlarms(AlarmFilter alarmFilter, int batchSize) {
+    public String buildAlarmFeed(AlarmFilter alarmFilter, int feedSize) {
 
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -112,7 +103,7 @@ public class ReadAlarms {
             channelElement.appendChild(pubdateElement);
 
             AlarmCollection alarmCollection = alarmApi.getAlarmsByFilter(alarmFilter);
-            Iterable<AlarmRepresentation> arIterable = alarmCollection.get(batchSize, revertParam).getAlarms();
+            Iterable<AlarmRepresentation> arIterable = alarmCollection.get(feedSize, revertParam).getAlarms();
             arIterable.forEach((ar) -> {
                 Element alarmElement = doc.createElement("alarm");
                 channelElement.appendChild(alarmElement);
