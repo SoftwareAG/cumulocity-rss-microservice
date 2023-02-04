@@ -128,12 +128,10 @@ public class ReadEvents {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(source, result);
-            logger.info("\n" + writer.toString());
+            logger.debug("\n" + writer.toString());
             return writer.toString();
-        } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (TransformerException tfe) {
-            tfe.printStackTrace();
+        } catch (ParserConfigurationException | TransformerException e) {
+        	logger.error("Error creating event rss feed: ", e);
         }
         return "";
     }
