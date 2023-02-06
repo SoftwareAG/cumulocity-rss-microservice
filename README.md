@@ -7,7 +7,7 @@ This microservice provides events and alarms from Cumulocity IoT as an RSS feed 
 
 This microservice is multi-tenant microservice meaning that it can either be installed directly on the tenant for which an RSS should be provided or on the corresponding enterprise or management tenant and then subscribe the child tenant to the microservice. 
 
-The microservice is available as a microservice package from the [Releases]{https://github.com/SoftwareAG/cumulocity-rss-microservice/releases} section. The details to install and subscribe a microservice are available in the [Cumulocity IoT Users Guide]{https://cumulocity.com/guides/users-guide/administration/#managing-microservices}.
+The microservice is available as a microservice package from the [Releases](https://github.com/SoftwareAG/cumulocity-rss-microservice/releases) section. The details to install and subscribe a microservice are available in the [Cumulocity IoT Users Guide](https://cumulocity.com/guides/users-guide/administration/#managing-microservices).
 
 ## Usage
 
